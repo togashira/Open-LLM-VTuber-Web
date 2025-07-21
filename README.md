@@ -1,6 +1,8 @@
 # open-llm-vtuber-electron
 
-An Electron application with React and TypeScript
+An Electron application with React and TypeScript - **Now with HTTPS Web Deploy Support!**
+
+> 🚀 **v1.2.0**: Full HTTPS web application deployment capability with Live2D model file loading support
 
 ## Recommended IDE Setup
 
