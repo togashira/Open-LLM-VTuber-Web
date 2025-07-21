@@ -7,6 +7,7 @@ import { useLive2DResize } from "@/hooks/canvas/use-live2d-resize";
 import { useInterrupt } from "@/hooks/utils/use-interrupt";
 import { useAudioTask } from "@/hooks/utils/use-audio-task";
 import { useForceIgnoreMouse } from "@/hooks/utils/use-force-ignore-mouse";
+import { useLive2DDebug } from "@/hooks/utils/use-live2d-debug";
 
 interface Live2DProps {
   isPet: boolean;
@@ -15,6 +16,7 @@ interface Live2DProps {
 export const Live2D = memo(({ isPet }: Live2DProps): JSX.Element => {
   const { modelInfo, isLoading } = useLive2DConfig();
   const { forceIgnoreMouse } = useForceIgnoreMouse();
+  const { debugInfo, testLive2DConnection } = useLive2DDebug();
 
   // Register IPC handlers here as Live2D is a persistent component in the pet mode
   useIpcHandlers({ isPet });
@@ -42,13 +44,18 @@ export const Live2D = memo(({ isPet }: Live2DProps): JSX.Element => {
         },
         setRandomExpression: () => modelRef.current?.internalModel.motionManager.expressionManager?.setRandomExpression(),
         getExpressions: () => modelRef.current?.internalModel.motionManager.expressionManager?.definitions.map((d) => d.name),
+        // デバッグ用関数を追加
+        debug: () => {
+          console.log('Live2D Debug Info:', debugInfo);
+          testLive2DConnection();
+        },
       };
     }
     return () => {
       // @ts-ignore
       delete window.live2d;
     };
-  }, [modelRef.current]); // window.live2d.expression() / getExpressions() / setRandomExpression()
+  }, [modelRef.current, debugInfo, testLive2DConnection]); // window.live2d.expression() / getExpressions() / setRandomExpression() / debug()
 
   return (
     <div

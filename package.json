@@ -21,7 +21,11 @@
     "build:mac": "electron-vite build && electron-builder --mac",
     "build:linux": "electron-vite build && electron-builder --linux",
     "dev:web": "vite serve src/renderer --config vite.config.ts",
-    "build:web": "vite build --config vite.config.ts --mode web"
+    "dev:web:https": "vite serve src/renderer --config vite.config.ts --https",
+    "build:web": "vite build --config vite.config.ts --mode web",
+    "build:web:production": "vite build --config vite.config.ts --mode web --mode production",
+    "preview:web": "vite preview --config vite.config.ts",
+    "preview:web:https": "vite preview --config vite.config.ts --https"
   },
   "dependencies": {
     "@chakra-ui/react": "^3.2.3",

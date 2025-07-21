@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # 本番環境では実際の証明書パスに変更してください
+      - ./certs:/etc/ssl/certs:ro
+      - ./private:/etc/ssl/private:ro
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - app-network
+    depends_on:
+      - backend
+
+  # バックエンドサービス（実際のバックエンドイメージに変更してください）
+  backend:
+    image: your-backend-image:latest
+    # または Dockerfileからビルドする場合:
+    # build:
+    #   context: ../path-to-backend
+    #   dockerfile: Dockerfile
+    ports:
+      - "12393:12393"
+    environment:
+      - NODE_ENV=production
+      # バックエンド固有の環境変数を追加
+      # - DATABASE_URL=your-database-url
+      # - API_KEY=your-api-key
+    volumes:
+      # バックエンド用の設定ファイルやデータボリューム
+      # - ./backend-config:/app/config
+      # - backend-data:/app/data
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # 開発用バックエンド（ローカルバックエンドを使用する場合）
+  backend-dev:
+    image: your-backend-image:dev
+    ports:
+      - "12393:12393"
+    environment:
+      - NODE_ENV=development
+      - HOST=0.0.0.0
+      - PORT=12393
+    volumes:
+      - ./backend-dev-config:/app/config
+    restart: unless-stopped
+    networks:
+      - app-network
+    profiles:
+      - dev
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  certs:
+  private:
+  backend-data:

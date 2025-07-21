@@ -3,8 +3,71 @@ import React, { useContext, useCallback } from 'react';
 import { wsService } from '@/services/websocket-service';
 import { useLocalStorage } from '@/hooks/utils/use-local-storage';
 
-const DEFAULT_WS_URL = 'ws://127.0.0.1:12393/client-ws';
-const DEFAULT_BASE_URL = 'http://127.0.0.1:12393';
+// 環境変数から設定を取得、フォールバックとしてローカル設定を使用
+const getDefaultWsUrl = () => {
+  // 環境変数で完全なURLが指定されている場合は優先
+  if (import.meta.env.VITE_WS_URL) {
+    return import.meta.env.VITE_WS_URL;
+  }
+  
+  // HTTPS環境かどうかを判定
+  const isHttps = window.location.protocol === 'https:';
+  const hostname = window.location.hostname;
+  const port = import.meta.env.VITE_BACKEND_PORT || '12393';
+  
+  // 本番環境（HTTPS）では wss:// を使用
+  // ただし、ポート指定なしでドメイン直接接続
+  if (isHttps) {
+    // itcometrue.academy のような本番ドメインの場合はポートなし
+    if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+      return `wss://${hostname}/client-ws`;
+    }
+    return `wss://${hostname}:${port}/client-ws`;
+  }
+  
+  // 開発環境では ws:// を使用
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return `ws://127.0.0.1:${port}/client-ws`;
+  }
+  
+  // その他の環境
+  return `ws://${hostname}:${port}/client-ws`;
+};
+
+const getDefaultBaseUrl = () => {
+  // 環境変数で完全なURLが指定されている場合は優先
+  if (import.meta.env.VITE_BASE_URL) {
+    return import.meta.env.VITE_BASE_URL;
+  }
+  
+  const isHttps = window.location.protocol === 'https:';
+  const hostname = window.location.hostname;
+  const port = import.meta.env.VITE_BACKEND_PORT || '12393';
+  
+  // itcometrue.academy の場合の実績に基づく設定
+  // Live2Dモデルファイルのアクセスを考慮してHTTPSに変更
+  if (hostname === 'itcometrue.academy') {
+    return `https://${hostname}`;
+  }
+  
+  if (isHttps) {
+    // ローカルHTTPS環境
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return `https://${hostname}:${port}`;
+    }
+    // その他のHTTPS環境（通常はHTTPS）
+    return `https://${hostname}`;
+  }
+  
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return `http://127.0.0.1:${port}`;
+  }
+  
+  return `http://${hostname}:${port}`;
+};
+
+const DEFAULT_WS_URL = getDefaultWsUrl();
+const DEFAULT_BASE_URL = getDefaultBaseUrl();
 
 export interface HistoryInfo {
   uid: string;

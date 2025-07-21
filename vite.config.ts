@@ -36,6 +36,38 @@ const createConfig = async (outDir: string) => ({
   base: './',
   server: {
     port: 3000,
+    host: '0.0.0.0',
+    https: process.env.HTTPS === 'true' || process.argv.includes('--https'),
+    cors: true,
+    headers: {
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+    },
+    proxy: {
+      // バックエンドAPIのプロキシ設定
+      '/api': {
+        target: `http://${process.env.VITE_BACKEND_HOST || '127.0.0.1'}:${process.env.VITE_BACKEND_PORT || '12393'}`,
+        changeOrigin: true,
+        secure: false,
+        ws: false,
+      },
+      // WebSocketのプロキシ設定
+      '/client-ws': {
+        target: `ws://${process.env.VITE_BACKEND_HOST || '127.0.0.1'}:${process.env.VITE_BACKEND_PORT || '12393'}`,
+        ws: true,
+        changeOrigin: true,
+      },
+    },
+  },
+  preview: {
+    port: 4173,
+    host: '0.0.0.0',
+    https: process.env.HTTPS === 'true' || process.argv.includes('--https'),
+    cors: true,
+    headers: {
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+    },
   },
   build: {
     outDir: path.join(__dirname, outDir),
