@@ -71,6 +71,7 @@ export const Live2D = memo(({ isPet }: Live2DProps): JSX.Element => {
     >
       <canvas
         id="canvas"
+        className="live2d-canvas"
         ref={canvasRef}
         style={{
           width: "100%",
