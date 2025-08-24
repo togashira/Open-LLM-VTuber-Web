@@ -34,12 +34,11 @@ export const Live2D = memo(({ isPet }: Live2DProps): JSX.Element => {
 
   useEffect(() => {
     // 段階的にグローバル依存を出力
-    console.log('[Live2D] window.L2DModelWebGL:', (window as any).L2DModelWebGL);
-    console.log('[Live2D] window.live2d:', (window as any).live2d);
-    if (typeof (window as any).L2DModelWebGL === 'undefined') {
-      console.error('[Live2D] L2DModelWebGL is NOT defined! live2d.min.jsが正しくロードされていません');
+    if (typeof (window as any).Live2DCubismCore === 'undefined') {
+      console.error('[Live2D] Live2DCubismCore is NOT defined! live2dcubismcore.min.jsが正しくロードされていません');
+      return;
     } else {
-      console.log('[Live2D] L2DModelWebGL is defined.');
+      console.log('[Live2D] Live2DCubismCore is defined.');
     }
     if (modelRef.current) {
       // @ts-ignore

@@ -115,6 +115,15 @@ const ChatBox: React.FC<ChatBoxProps> = ({ id, position, size = 'large' }) => {
     }
   };
 
+  // Guard for Live2DCubismCore usage to prevent errors if runtime is not loaded
+  const safeUseCubismCore = (callback: () => void) => {
+    if (typeof (window as any).Live2DCubismCore === 'undefined') {
+      console.warn('[ChatBox] Live2DCubismCore is not defined yet. Skipping CubismCore dependent code.');
+      return;
+    }
+    callback();
+  };
+
   // まず開閉UIのみ即時描画
   return (
     <>
