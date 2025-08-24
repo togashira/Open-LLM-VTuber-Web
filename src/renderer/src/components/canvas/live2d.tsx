@@ -33,6 +33,14 @@ export const Live2D = memo(({ isPet }: Live2DProps): JSX.Element => {
   useAudioTask();
 
   useEffect(() => {
+    // 段階的にグローバル依存を出力
+    console.log('[Live2D] window.L2DModelWebGL:', (window as any).L2DModelWebGL);
+    console.log('[Live2D] window.live2d:', (window as any).live2d);
+    if (typeof (window as any).L2DModelWebGL === 'undefined') {
+      console.error('[Live2D] L2DModelWebGL is NOT defined! live2d.min.jsが正しくロードされていません');
+    } else {
+      console.log('[Live2D] L2DModelWebGL is defined.');
+    }
     if (modelRef.current) {
       // @ts-ignore
       window.live2d = {
@@ -44,7 +52,6 @@ export const Live2D = memo(({ isPet }: Live2DProps): JSX.Element => {
         },
         setRandomExpression: () => modelRef.current?.internalModel.motionManager.expressionManager?.setRandomExpression(),
         getExpressions: () => modelRef.current?.internalModel.motionManager.expressionManager?.definitions.map((d) => d.name),
-        // デバッグ用関数を追加
         debug: () => {
           console.log('Live2D Debug Info:', debugInfo);
           testLive2DConnection();
@@ -55,7 +62,7 @@ export const Live2D = memo(({ isPet }: Live2DProps): JSX.Element => {
       // @ts-ignore
       delete window.live2d;
     };
-  }, [modelRef.current, debugInfo, testLive2DConnection]); // window.live2d.expression() / getExpressions() / setRandomExpression() / debug()
+  }, [modelRef.current, debugInfo, testLive2DConnection]);
 
   return (
     <div

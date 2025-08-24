@@ -1,28 +1,68 @@
+.chatbox-large {
+  width: 400px;
+  height: 500px;
+  font-size: 1.2em;
+}
+
+.chatbox-medium {
+  width: 320px;
+  height: 400px;
+  font-size: 1em;
+}
+
+.chatbox-small {
+  width: 220px;
+  height: 260px;
+  font-size: 0.9em;
+}
+
+.chatbox-small-alt {
+  width: 220px;
+  height: 260px;
+  font-size: 0.9em;
+  background: #f0f8ff !important;
+  border: 2px solid #ff9800 !important;
+}
+
+
+#chatbox-root {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10000;
+}
+
+
 .chatbox {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: white;
+  bottom: 80px;
+  right: 24px;
+  background: #fff !important;
+  color: #222 !important;
+  border: 2px solid #007bff;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   width: 300px;
   max-height: 500px;
+  opacity: 1 !important;
   transition: all 0.3s;
-  z-index: 1000;
+  z-index: 9999;
 }
 
 .chatbox.open { display: block; }
 .chatbox:not(.open) { display: none; }
 
 .toggle-btn {
-  position: absolute;
-  bottom: 0;
-  right: 0;
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
   padding: 10px;
   background: #007bff;
   color: white;
   border: none;
   border-radius: 50%;
+  z-index: 11000;
+  pointer-events: auto;
 }
 
 .live2d-canvas {

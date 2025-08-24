@@ -6,23 +6,21 @@ declare global {
 }
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+
 import ChatBox from './components/chatbox/chatbox';
 
 
 import { createRoot } from 'react-dom/client';
 window.addEventListener('DOMContentLoaded', () => {
-  if (!document.getElementById('chatbox-root')) {
-    const root = document.createElement('div');
+  let root = document.getElementById('chatbox-root');
+  if (!root) {
+    root = document.createElement('div');
     root.id = 'chatbox-root';
     document.body.appendChild(root);
   }
-  window.initChatBox = () => {
-    const root = document.getElementById('chatbox-root');
-    if (root) {
-      createRoot(root).render(<ChatBox />);
-    }
-  };
-  if (window.location.search.includes('auto')) {
-    window.initChatBox();
-  }
+  createRoot(root).render(
+    <>
+  <ChatBox id="main" key="main" size="large" position={{position:'fixed',right:24,bottom:24,zIndex:12000}} />
+    </>
+  );
 });
