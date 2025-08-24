@@ -40,10 +40,15 @@ export default defineConfig({
         changeOrigin: true,
         secure: true,
       },
+      '/asr': {
+        target: 'https://api.itcometrue.academy',
+        changeOrigin: true,
+        secure: true,
+      },
     },
   },
   build: {
-    outDir: 'dist',
+    outDir: 'dist', // 統一出力先
     emptyOutDir: true,
     rollupOptions: {
       input: './src/renderer/src/chatbox-entry.js',
