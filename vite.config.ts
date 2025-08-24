@@ -1,10 +1,12 @@
+// ~/Open-LLM-VTuber-Web/vite.config.ts
 import { defineConfig, normalizePath } from 'vite';
+import react from '@vitejs/plugin-react';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 import path from 'path';
-import react from '@vitejs/plugin-react-swc';
 
-const createConfig = async (outDir: string) => ({
+export default defineConfig({
   plugins: [
-    (await import('vite-plugin-static-copy')).viteStaticCopy({
+    viteStaticCopy({
       targets: [
         {
           src: normalizePath(path.resolve(__dirname, 'node_modules/@ricky0123/vad-web/dist/vad.worklet.bundle.min.js')),
@@ -26,67 +28,36 @@ const createConfig = async (outDir: string) => ({
     }),
     react(),
   ],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src/renderer/src'),
-    },
-  },
-  root: path.join(__dirname, 'src/renderer'),
-  publicDir: path.join(__dirname, 'src/renderer/public'),
-  base: './',
+  root: '.',
+  publicDir: 'public',
+  base: '/',
   server: {
     port: 3000,
     host: '0.0.0.0',
-    https: process.env.HTTPS === 'true' || process.argv.includes('--https'),
-    cors: true,
-    headers: {
-      'Cross-Origin-Embedder-Policy': 'require-corp',
-      'Cross-Origin-Opener-Policy': 'same-origin',
-    },
     proxy: {
-      // バックエンドAPIのプロキシ設定
-      '/api': {
-        target: `http://${process.env.VITE_BACKEND_HOST || '127.0.0.1'}:${process.env.VITE_BACKEND_PORT || '12393'}`,
+      '/chat': {
+        target: 'https://api.itcometrue.academy',
         changeOrigin: true,
-        secure: false,
-        ws: false,
+        secure: true,
       },
-      // WebSocketのプロキシ設定
-      '/client-ws': {
-        target: `ws://${process.env.VITE_BACKEND_HOST || '127.0.0.1'}:${process.env.VITE_BACKEND_PORT || '12393'}`,
-        ws: true,
-        changeOrigin: true,
-      },
-    },
-  },
-  preview: {
-    port: 4173,
-    host: '0.0.0.0',
-    https: process.env.HTTPS === 'true' || process.argv.includes('--https'),
-    cors: true,
-    headers: {
-      'Cross-Origin-Embedder-Policy': 'require-corp',
-      'Cross-Origin-Opener-Policy': 'same-origin',
     },
   },
   build: {
-    outDir: path.join(__dirname, outDir),
+    outDir: 'dist',
     emptyOutDir: true,
-    assetsDir: 'assets',
     rollupOptions: {
-      input: {
-        main: path.join(__dirname, 'src/renderer/index.html'),
+      input: './src/renderer/src/chatbox-entry.js',
+      output: {
+        entryFileNames: 'chatbox.js',
+        format: 'iife',
+        name: 'ITComeTrueChat',
+        globals: {
+          react: 'React',
+          'react-dom': 'ReactDOM',
+        },
       },
     },
+    minify: 'esbuild',
+    sourcemap: false,
   },
-  ssr: {
-    noExternal: ['vite-plugin-static-copy'],
-  },
-});
-
-export default defineConfig(async ({ mode }) => {
-  if (mode === 'web') {
-    return createConfig('dist/web');
-  }
-  return createConfig('dist/renderer');
 });
