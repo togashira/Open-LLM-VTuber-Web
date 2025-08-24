@@ -115,10 +115,10 @@ const ChatBox: React.FC<ChatBoxProps> = ({ id, position, size = 'large' }) => {
     }
   };
 
-  // Guard for Live2DCubismCore usage to prevent errors if runtime is not loaded
+  // Guard for Live2DCubismCore usage to prevent errors if runtime is not loaded (Cubism4専用)
   const safeUseCubismCore = (callback: () => void) => {
     if (typeof (window as any).Live2DCubismCore === 'undefined') {
-      console.warn('[ChatBox] Live2DCubismCore is not defined yet. Skipping CubismCore dependent code.');
+      console.warn('[ChatBox] Live2DCubismCore is not defined yet. Skipping Cubism4 dependent code.');
       return;
     }
     callback();

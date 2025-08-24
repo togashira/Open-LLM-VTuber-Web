@@ -38,12 +38,11 @@ export const Live2D = memo(({ isPet }: Live2DProps): JSX.Element => {
       console.error('[Live2D] Live2DCubismCore is NOT defined! live2dcubismcore.min.jsが正しくロードされていません');
       return;
     } else {
-      console.log('[Live2D] Live2DCubismCore is defined.');
+      console.log('[Live2D] Live2DCubismCore is defined. (Cubism4)');
     }
     if (modelRef.current) {
-      // @ts-ignore
-      window.live2d = {
-        expression: (name?: string | number) => modelRef.current?.expression(name),
+      // Cubism4用のグローバルAPIをwindow.live2dにエクスポート
+  (window as any).live2d = {
         setExpression: (name?: string | number) => {
           if (name !== undefined) {
             modelRef.current?.internalModel.motionManager.expressionManager?.setExpression(name);
@@ -58,8 +57,7 @@ export const Live2D = memo(({ isPet }: Live2DProps): JSX.Element => {
       };
     }
     return () => {
-      // @ts-ignore
-      delete window.live2d;
+  delete (window as any).live2d;
     };
   }, [modelRef.current, debugInfo, testLive2DConnection]);
 

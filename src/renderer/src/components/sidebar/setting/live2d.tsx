@@ -5,12 +5,12 @@ import { settingStyles } from './setting-styles';
 import { useLive2dSettings } from '@/hooks/sidebar/setting/use-live2d-settings';
 import { SwitchField } from './common';
 
-interface live2DProps {
+interface Live2DProps {
   onSave?: (callback: () => void) => () => void
   onCancel?: (callback: () => void) => () => void
 }
 
-function live2D({ onSave, onCancel }: live2DProps): JSX.Element {
+function Live2DSetting({ onSave, onCancel }: Live2DProps): JSX.Element {
   const {
     modelInfo,
     handleInputChange,
@@ -47,4 +47,4 @@ function live2D({ onSave, onCancel }: live2DProps): JSX.Element {
   );
 }
 
-export default live2D;
+export default Live2DSetting;
