@@ -1,0 +1,65 @@
+/* Chatbox用CSS（例） */
+/* chatbox本体 */
+#chatbox-root {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+}
+
+.chatbox {
+  width: 360px;
+  max-width: 90vw;
+  height: 540px;
+  max-height: 90vh;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  overflow: hidden;
+  display: none;
+  flex-direction: column;
+  transition: box-shadow 0.2s, opacity 0.2s, transform 0.2s;
+  opacity: 0;
+  transform: translateY(40px) scale(0.95);
+}
+.chatbox.open {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* 開閉ボタン */
+.toggle-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  z-index: 10000;
+  background: transparent;
+  border: none;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.toggle-btn img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.12));
+}
+.toggle-btn.open {
+  background: #0078d4;
+  border-radius: 50%;
+  color: #fff;
+  transition: background 0.2s;
+}
+.toggle-btn.open:hover {
+  background: #005fa3;
+}
+
+/* 必要に応じて追加のスタイルをここに記述 */
+
+/* 必要に応じて追加のスタイルをここに記述 */

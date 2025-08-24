@@ -1,4 +1,3 @@
-// ~/Open-LLM-VTuber-Web/vite.config.ts
 import { defineConfig, normalizePath } from 'vite';
 import react from '@vitejs/plugin-react';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
@@ -10,19 +9,19 @@ export default defineConfig(({ mode }) => {
       viteStaticCopy({
         targets: [
           {
-            src: normalizePath(path.resolve(__dirname, 'node_modules/@ricky0123/vad-web/dist/vad.worklet.bundle.min.js')),
+            src: normalizePath(path.resolve(path.dirname(new URL(import.meta.url).pathname), 'node_modules/@ricky0123/vad-web/dist/vad.worklet.bundle.min.js')),
             dest: './libs/',
           },
           {
-            src: normalizePath(path.resolve(__dirname, 'node_modules/@ricky0123/vad-web/dist/silero_vad_v5.onnx')),
+            src: normalizePath(path.resolve(path.dirname(new URL(import.meta.url).pathname), 'node_modules/@ricky0123/vad-web/dist/silero_vad_v5.onnx')),
             dest: './libs/',
           },
           {
-            src: normalizePath(path.resolve(__dirname, 'node_modules/@ricky0123/vad-web/dist/silero_vad_legacy.onnx')),
+            src: normalizePath(path.resolve(path.dirname(new URL(import.meta.url).pathname), 'node_modules/@ricky0123/vad-web/dist/silero_vad_legacy.onnx')),
             dest: './libs/',
           },
           {
-            src: normalizePath(path.resolve(__dirname, 'node_modules/onnxruntime-web/dist/*.wasm')),
+            src: normalizePath(path.resolve(path.dirname(new URL(import.meta.url).pathname), 'node_modules/onnxruntime-web/dist/*.wasm')),
             dest: './libs/',
           },
         ],
@@ -57,7 +56,8 @@ export default defineConfig(({ mode }) => {
         outDir: 'dist/web',
         emptyOutDir: true,
         rollupOptions: {
-          input: './src/renderer/src/chatbox-entry.js',
+          input: './src/renderer/src/chatbox-entry.tsx',
+          external: ['@cubism/live2d-sdk'],
           output: {
             entryFileNames: 'chatbox.js',
             format: 'iife',
@@ -65,6 +65,7 @@ export default defineConfig(({ mode }) => {
             globals: {
               react: 'React',
               'react-dom': 'ReactDOM',
+              '@cubism/live2d-sdk': 'Live2DCubismCore',
             },
           },
         },
@@ -79,7 +80,7 @@ export default defineConfig(({ mode }) => {
     ...baseConfig,
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './src/renderer/src'),
+        '@': path.resolve(path.dirname(new URL(import.meta.url).pathname), './src/renderer/src'),
       },
     },
     build: {

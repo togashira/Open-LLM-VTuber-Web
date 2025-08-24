@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import ChatBox from './components/ChatBox';
+import ChatBox from './components/chatbox/chatbox';
 const initChatBox = () => {
   const container = document.createElement('div');
   container.id = 'itcometrue-chatbox';
