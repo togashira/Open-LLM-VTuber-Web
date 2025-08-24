@@ -96,11 +96,22 @@ const ChatBox: React.FC = () => {
       </button>
       {isOpen && (
         <div className={`chatbox ${size}`}> 
-          <div className="size-controls">
-            <button onClick={() => setSize('small')}>Small</button>
-            <button onClick={() => setSize('medium')}>Medium</button>
-            <button onClick={() => setSize('full')}>Full</button>
+          {/* バージョンバナー */}
+          <div style={{
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            background: '#0078d4',
+            color: '#fff',
+            borderRadius: '8px',
+            padding: '2px 10px',
+            fontSize: '12px',
+            zIndex: 10001,
+            opacity: 0.85
+          }}>
+            v{process.env.REACT_APP_VERSION || process.env.VERSION || 'dev'}
           </div>
+          {/* サイズ変更UIは非表示化 */}
           <canvas ref={canvasRef} className="live2d-canvas" />
           <div className="messages" ref={messagesRef}>
             {messages.map((msg, i) => (
