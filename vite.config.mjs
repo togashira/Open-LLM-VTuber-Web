@@ -1,10 +1,14 @@
 import { defineConfig, normalizePath } from 'vite';
+import pkg from './package.json' assert { type: 'json' };
 import react from '@vitejs/plugin-react';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import path from 'path';
 
 export default defineConfig(({ mode }) => {
   const baseConfig = {
+    define: {
+      __APP_VERSION__: JSON.stringify(pkg.version),
+    },
     plugins: [
       viteStaticCopy({
         targets: [
@@ -52,6 +56,11 @@ export default defineConfig(({ mode }) => {
   if (mode === 'web') {
     return {
       ...baseConfig,
+      resolve: {
+        alias: {
+          '@': path.resolve(path.dirname(new URL(import.meta.url).pathname), './src/renderer/src'),
+        },
+      },
       build: {
         outDir: 'dist/web',
         emptyOutDir: true,

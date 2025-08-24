@@ -56,12 +56,24 @@ export default defineConfig(({ mode }) => {
       build: {
         outDir: 'dist/web',
         emptyOutDir: true,
+        lib: {
+          entry: './src/renderer/src/chatbox-entry.tsx',
+          name: 'ITComeTrueChat',
+          formats: ['iife'],
+        },
         rollupOptions: {
-          input: './src/renderer/src/chatbox-entry.js',
           output: {
-            entryFileNames: 'chatbox.js',
-            format: 'iife',
-            name: 'ITComeTrueChat',
+            entryFileNames: (chunkInfo) => {
+              const date = new Date().toISOString().slice(0,10).replace(/-/g, '');
+              return `chatbox-${date}_1.js`;
+            },
+            assetFileNames: (assetInfo) => {
+              const date = new Date().toISOString().slice(0,10).replace(/-/g, '');
+              if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+                return `chatbox-${date}_2.css`;
+              }
+              return assetInfo.name || '[name]';
+            },
             globals: {
               react: 'React',
               'react-dom': 'ReactDOM',
@@ -77,11 +89,11 @@ export default defineConfig(({ mode }) => {
   // Electronデフォルト設定（現状維持）
   return {
     ...baseConfig,
-    resolve: {
-      alias: {
-        '@': path.resolve(__dirname, './src/renderer/src'),
-      },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src/renderer/src'),
     },
+  },
     build: {
       outDir: 'out/renderer',
       rollupOptions: {

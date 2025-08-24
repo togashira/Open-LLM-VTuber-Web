@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { memo, useEffect } from "react";
-import { useLive2DConfig } from "@/context/live2d-config-context";
-import { useIpcHandlers } from "@/hooks/utils/use-ipc-handlers";
-import { useLive2DModel } from "@/hooks/canvas/use-live2d-model";
-import { useLive2DResize } from "@/hooks/canvas/use-live2d-resize";
-import { useInterrupt } from "@/hooks/utils/use-interrupt";
-import { useAudioTask } from "@/hooks/utils/use-audio-task";
-import { useForceIgnoreMouse } from "@/hooks/utils/use-force-ignore-mouse";
-import { useLive2DDebug } from "@/hooks/utils/use-live2d-debug";
+import { useLive2DConfig } from "../../context/live2d-config-context";
+import { useIpcHandlers } from "../../hooks/utils/use-ipc-handlers";
+import { useLive2DModel } from "../../hooks/canvas/use-live2d-model";
+import { useLive2DResize } from "../../hooks/canvas/use-live2d-resize";
+import { useInterrupt } from "../../hooks/utils/use-interrupt";
+import { useAudioTask } from "../../hooks/utils/use-audio-task";
+import { useForceIgnoreMouse } from "../../hooks/utils/use-force-ignore-mouse";
+import { useLive2DDebug } from "../../hooks/utils/use-live2d-debug";
 
 interface Live2DProps {
   isPet: boolean;

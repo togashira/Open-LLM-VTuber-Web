@@ -1,34 +1,43 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { VoiceActivityDetection } from '@ricky0123/vad-web';
+import { Live2D } from '../canvas/live2d';
+import { MicVAD } from '@ricky0123/vad-web';
 import './chatbox.css';
 
 const ChatBox: React.FC = () => {
   // 開閉式ChatBox
   const [isOpen, setIsOpen] = useState(true);
+  // 開閉状態をローカルストレージで保持（リロード時も維持）
+  useEffect(() => {
+    const saved = localStorage.getItem('chatbox_isOpen');
+    if (saved !== null) setIsOpen(saved === 'true');
+  }, []);
+  useEffect(() => {
+    localStorage.setItem('chatbox_isOpen', String(isOpen));
+  }, [isOpen]);
   const [messages, setMessages] = useState<{ text: string; isUser: boolean }[]>([]);
   const [input, setInput] = useState('');
   const [size, setSize] = useState<'small' | 'medium' | 'full'>('small');
   const [isRecording, setIsRecording] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
-  const vadRef = useRef<VoiceActivityDetection | null>(null);
+  const vadRef = useRef<MicVAD | null>(null);
 
   useEffect(() => {
-    const initLive2D = () => {
-      const Live2DCubismCore = (window as any).Live2DCubismCore;
-      if (Live2DCubismCore && canvasRef.current) {
-        const model = new Live2DCubismCore.Model('/models/hiyori/hiyori.model3.json');
-        model.startMotion('idle');
-        window.addEventListener('messageReceived', () => model.startMotion('talk'));
-      }
-    };
-    initLive2D();
     const initVAD = async () => {
-      vadRef.current = new VoiceActivityDetection({
+      const vadInstance = await MicVAD.new({
         onSpeechEnd: async (audio) => {
           setIsRecording(false);
           const formData = new FormData();
-          formData.append('audio', new Blob([audio], { type: 'audio/wav' }));
+          // Convert Float32Array or SharedArrayBuffer audio to ArrayBuffer for Blob
+          let audioBuffer: ArrayBuffer;
+          if (audio.buffer instanceof SharedArrayBuffer) {
+            // Convert SharedArrayBuffer to ArrayBuffer copy
+            audioBuffer = new Uint8Array(audio.buffer).buffer;
+          } else if (audio.buffer instanceof ArrayBuffer) {
+            audioBuffer = audio.buffer;
+          } else {
+            audioBuffer = audio;
+          }
+          formData.append('audio', new Blob([audioBuffer], { type: 'audio/wav' }));
           try {
             const response = await fetch('https://api.itcometrue.academy/asr', {
               method: 'POST',
@@ -41,7 +50,7 @@ const ChatBox: React.FC = () => {
           }
         },
       });
-      await vadRef.current.init();
+      vadRef.current = vadInstance;
     };
     initVAD();
     if (messagesRef.current) {
@@ -49,7 +58,10 @@ const ChatBox: React.FC = () => {
     }
     const saved = localStorage.getItem('chatHistory');
     if (saved) setMessages(JSON.parse(saved));
-    return () => vadRef.current?.close();
+    return () => {
+      // MicVAD does not have close method, so just nullify
+      vadRef.current = null;
+    };
   }, [messages]);
 
   const handleMessage = async (text: string, isUser: boolean) => {
@@ -76,10 +88,31 @@ const ChatBox: React.FC = () => {
 
   const toggleRecording = async () => {
     if (isRecording) {
-      await vadRef.current?.stop();
+      // MicVAD does not have stop method, so just nullify or implement alternative if available
+      vadRef.current = null;
       setIsRecording(false);
     } else {
-      await vadRef.current?.start();
+      // MicVAD does not have start method, so re-initialize or handle accordingly
+      const vadInstance = await MicVAD.new({
+        onSpeechEnd: async (audio) => {
+          setIsRecording(false);
+          const formData = new FormData();
+          // Convert Float32Array audio to ArrayBuffer for Blob
+          const audioBuffer = audio.buffer ? audio.buffer : audio;
+          formData.append('audio', new Blob([audioBuffer], { type: 'audio/wav' }));
+          try {
+            const response = await fetch('https://api.itcometrue.academy/asr', {
+              method: 'POST',
+              body: formData,
+            });
+            const { text } = await response.json();
+            handleMessage(text, true);
+          } catch (error) {
+            console.error('ASR error:', error);
+          }
+        },
+      });
+      vadRef.current = vadInstance;
       setIsRecording(true);
     }
   };
@@ -89,30 +122,32 @@ const ChatBox: React.FC = () => {
       <button
         className={`toggle-btn${isOpen ? ' open' : ''}`}
         onClick={() => setIsOpen((prev) => !prev)}
-        style={{ position: 'absolute', bottom: 12, right: 12, zIndex: 10000 }}
+        style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 10000 }}
         aria-label={isOpen ? 'Close Chatbox' : 'Open Chatbox'}
       >
         <img src="https://itcometruechatboxs3.s3.ap-northeast-1.amazonaws.com/icon.png" alt="Open Chatbox" style={{ width: 40, height: 40 }} />
       </button>
       {isOpen && (
-        <div className={`chatbox ${size}`}> 
+        <div className={`chatbox ${size}`}>
           {/* バージョンバナー */}
-          <div style={{
-            position: 'absolute',
-            top: 8,
-            right: 8,
-            background: '#0078d4',
-            color: '#fff',
-            borderRadius: '8px',
-            padding: '2px 10px',
-            fontSize: '12px',
-            zIndex: 10001,
-            opacity: 0.85
-          }}>
-            v{process.env.REACT_APP_VERSION || process.env.VERSION || 'dev'}
+          <div
+            style={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
+              background: '#0078d4',
+              color: '#fff',
+              borderRadius: '8px',
+              padding: '2px 10px',
+              fontSize: '12px',
+              zIndex: 10001,
+              opacity: 0.85,
+            }}
+          >
+            v{__APP_VERSION__}
           </div>
           {/* サイズ変更UIは非表示化 */}
-          <canvas ref={canvasRef} className="live2d-canvas" />
+          <Live2D isPet={false} />
           <div className="messages" ref={messagesRef}>
             {messages.map((msg, i) => (
               <div key={i} className={msg.isUser ? 'user' : 'bot'}>
