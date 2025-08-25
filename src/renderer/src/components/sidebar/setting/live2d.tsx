@@ -30,6 +30,8 @@ function Live2DSetting({ onSave, onCancel }: Live2DProps): JSX.Element {
     };
   }, [onSave, onCancel]);
 
+  // Remove any usage or settings related to Cubism2 here by not rendering any UI for it
+
   return (
     <Stack {...settingStyles.common.container}>
       <SwitchField

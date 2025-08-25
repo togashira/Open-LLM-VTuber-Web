@@ -48,7 +48,7 @@ const HeaderButtons = memo(({ onSettingsOpen, onNewHistory }: HeaderButtonsProps
     </Button>
 
     <GroupDrawer>
-      <Button>
+      <Button aria-label="Toggle Group Drawer">
         <FiUsers />
       </Button>
     </GroupDrawer>
